@@ -49,19 +49,29 @@ function drs
     x0 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
     x0 = fsolve(@syste, x0);
 
+    p1l = [];
+    p2l = [];
+    p3l = [];
+    for i = 1:length(ksilist)
+        ksi = ksilist(i);
+        p1l = [p1l, x0(1) * ksi + x0(2) * ksi^3 + x0(3) * ksi^4];
+        p2l = [p2l, x0(4) * ksi + x0(5) * ksi^3 + x0(6) * ksi^4 + x0(7) * ksi^5];
+        p3l = [p3l, x0(8) * ksi + x0(9) * ksi^3 + x0(10) * ksi^4 + x0(11) * ksi^5 + x0(12) * ksi^6];
+    end
+
     fhandle = figure;
     subplot(3, 1, 1)
-        plot(ksilist, v1l, 'r', 'LineWidth', 2.0)
+        plot(ksilist, v1l, 'r', ksilist, p1l, 'b', 'LineWidth', 2.0)
         grid on;
         xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
         ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
     subplot(3, 1, 2)
-        plot(ksilist, v2l, 'r', 'LineWidth', 2.0)
+        plot(ksilist, v2l, 'r', ksilist, p2l, 'b', 'LineWidth', 2.0)
         grid on;
         xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
         ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
     subplot(3, 1, 3)
-        plot(ksilist, v3l, 'r', 'LineWidth', 2.0)
+        plot(ksilist, v3l, 'r', ksilist, p3l, 'b', 'LineWidth', 2.0)
         grid on;
         xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
         ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
