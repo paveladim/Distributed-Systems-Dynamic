@@ -46,17 +46,21 @@ function drs
         v3l = [v3l, v3(ksilist(i)) / norm3];
     end
 
-    x0 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+    x0 = ones(1, 12);
     x0 = fsolve(@syste, x0);
+
+    D = -ones(1, 6);
+    fun = @(x)syst(x, x0);
+    D = fsolve(fun, D);
 
     p1l = [];
     p2l = [];
     p3l = [];
     for i = 1:length(ksilist)
         ksi = ksilist(i);
-        p1l = [p1l, x0(1) * ksi + x0(2) * ksi^3 + x0(3) * ksi^4];
-        p2l = [p2l, x0(4) * ksi + x0(5) * ksi^3 + x0(6) * ksi^4 + x0(7) * ksi^5];
-        p3l = [p3l, x0(8) * ksi + x0(9) * ksi^3 + x0(10) * ksi^4 + x0(11) * ksi^5 + x0(12) * ksi^6];
+        p1l = [p1l, x0(4) * ksi + x0(5) * ksi^3 + x0(6) * ksi^4 + x0(7) * ksi^5];
+        p2l = [p2l, x0(8) * ksi + x0(9) * ksi^3 + x0(10) * ksi^4 + x0(11) * ksi^5 + x0(12) * ksi^6];
+        p3l = [p3l, D(1) * ksi + D(2) * ksi^3 + D(3) * ksi^4 + D(4) * ksi^5 + D(5) * ksi^6 + D(6) * ksi^7];
     end
 
     fhandle = figure;
@@ -76,6 +80,71 @@ function drs
         xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
         ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
 
+end
+
+function F = syst(X, coef)
+    a = zeros(1, 5);
+    b = zeros(1, 6);
+    c = zeros(1, 7);
+    d = zeros(1, 8);
+
+    a(2) = coef(1);
+    a(4) = coef(2);
+    a(5) = coef(3);
+
+    b(2) = coef(4);
+    b(4) = coef(5);
+    b(5) = coef(6);
+    b(6) = coef(7);
+
+    c(2) = coef(8);
+    c(4) = coef(9);
+    c(5) = coef(10);
+    c(6) = coef(11);
+    c(7) = coef(12);
+
+    d(2) = X(1);
+    d(4) = X(2);
+    d(5) = X(3);
+    d(6) = X(4);
+    d(7) = X(5);
+    d(8) = X(6);
+
+    F = zeros(1, 6);
+
+    for i = 2:7
+        F(1) = F(1) + i * (i - 1) * d(i + 1);
+    end
+
+    for i = 3:7
+        F(2) = F(2) + i * (i - 1) * (i - 2) * d(i + 1);
+    end
+
+    for i = 0:7
+        for j = 0:7
+            F(3) = F(3) + d(i + 1) * d(j + 1) / (i + j + 1);
+        end
+    end
+
+    F(3) = F(3) - 1;
+
+    for i = 0:7
+        for j = 0:6
+            F(4) = F(4) + d(i + 1) * c(j + 1) / (i + j + 1);
+        end
+    end
+
+    for i = 0:7
+        for j = 0:5
+            F(5) = F(5) + d(i + 1) * b(j + 1) / (i + j + 1);
+        end
+    end
+
+    for i = 0:7
+        for j = 0:4
+            F(6) = F(6) + d(i + 1) * a(j + 1) / (i + j + 1);
+        end
+    end
 end
 
 function F = syste(X)
