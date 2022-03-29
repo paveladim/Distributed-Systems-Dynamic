@@ -30,36 +30,24 @@ function drs
     v2 = @(x)(C21 * sin(b2 * x) + C22 * sinh(b2 * x));
     v3 = @(x)(C31 * sin(b3 * x) + C32 * sinh(b3 * x));
 
-    f11 = @(x)(b1^2 * (-C11 * sin(b1 * x) + C12 * sinh(b1 * x)) * (C11 * sin(b1 * x) + C12 * sinh(b1 * x)));
-    f12 = @(x)(b2^2 * (-C21 * sin(b2 * x) + C22 * sinh(b2 * x)) * (C11 * sin(b1 * x) + C12 * sinh(b1 * x)));
-    f13 = @(x)(b3^2 * (-C31 * sin(b3 * x) + C32 * sinh(b3 * x)) * (C11 * sin(b1 * x) + C12 * sinh(b1 * x)));
-
-    f21 = @(x)(b1^2 * (-C11 * sin(b1 * x) + C12 * sinh(b1 * x)) * (C21 * sin(b2 * x) + C22 * sinh(b2 * x)));
-    f22 = @(x)(b2^2 * (-C21 * sin(b2 * x) + C22 * sinh(b2 * x)) * (C21 * sin(b2 * x) + C22 * sinh(b2 * x)));
-    f23 = @(x)(b3^2 * (-C31 * sin(b3 * x) + C32 * sinh(b3 * x)) * (C21 * sin(b2 * x) + C22 * sinh(b2 * x)));
-
-    f31 = @(x)(b1^2 * (-C11 * sin(b1 * x) + C12 * sinh(b1 * x)) * (C31 * sin(b3 * x) + C32 * sinh(b3 * x)));
-    f32 = @(x)(b2^2 * (C21 * sin(b2 * x) + C22 * sinh(b2 * x)) * (C31 * sin(b3 * x) + C32 * sinh(b3 * x)));
-    f33 = @(x)(b3^2 * (-C31 * sin(b3 * x) + C32 * sinh(b3 * x)) * (C31 * sin(b3 * x) + C32 * sinh(b3 * x)));
-
-    a11 = integral(f11, 0, 1, "ArrayValued", true);
-    a21 = integral(f12, 0, 1, "ArrayValued", true);
-    a31 = integral(f13, 0, 1, "ArrayValued", true);
-
-    a12 = integral(f21, 0, 1, "ArrayValued", true);
-    a22 = integral(f22, 0, 1, "ArrayValued", true);
-    a32 = integral(f23, 0, 1, "ArrayValued", true);
-
-    a13 = integral(f31, 0, 1, "ArrayValued", true);
-    a23 = integral(f32, 0, 1, "ArrayValued", true);
-    a33 = integral(f33, 0, 1, "ArrayValued", true);
-
     v12 = @(x)((C11 * sin(b1 * x) + C12 * sinh(b1 * x))^2);
     norm1 = sqrt(integral(v12, 0, 1, "ArrayValued", true));
     v22 = @(x)((C21 * sin(b2 * x) + C22 * sinh(b2 * x))^2);
     norm2 = sqrt(integral(v22, 0, 1, "ArrayValued", true));
     v32 = @(x)((C31 * sin(b3 * x) + C32 * sinh(b3 * x))^2);
     norm3 = sqrt(integral(v32, 0, 1, "ArrayValued", true));
+
+    f11 = @(x)(b1^2 * (-C11 * sin(b1 * x) + C12 * sinh(b1 * x)) * (C11 * sin(b1 * x) + C12 * sinh(b1 * x)) / (norm1 * norm1));
+    f12 = @(x)(b2^2 * (-C21 * sin(b2 * x) + C22 * sinh(b2 * x)) * (C11 * sin(b1 * x) + C12 * sinh(b1 * x)) / (norm1 * norm2));
+
+    f21 = @(x)(b1^2 * (-C11 * sin(b1 * x) + C12 * sinh(b1 * x)) * (C21 * sin(b2 * x) + C22 * sinh(b2 * x)) / (norm1 * norm2));
+    f22 = @(x)(b2^2 * (-C21 * sin(b2 * x) + C22 * sinh(b2 * x)) * (C21 * sin(b2 * x) + C22 * sinh(b2 * x)) / (norm2 * norm2));
+
+    a11 = integral(f11, 0, 1, "ArrayValued", true);
+    a21 = integral(f12, 0, 1, "ArrayValued", true);
+
+    a12 = integral(f21, 0, 1, "ArrayValued", true);
+    a22 = integral(f22, 0, 1, "ArrayValued", true);
 
     v1l = [];
     v2l = [];
@@ -100,19 +88,56 @@ function drs
     disp2 = disp2 * 0.001;
     disp3 = disp3 * 0.001;
 
+    A0 = 1;
+    A1 = @(b)(b * (a11 + a22) + b1^4 + b2^4);
+    A2 = @(b)((b * a11 + b1^4) * (b * a22 + b2^4) - b^2 * a12 * a21);
+    
+    blst = 20.15 : 0.000001 : 20.2;
+    unstablelst11 = [];
+    unstablelst12 = [];
+    unstablelst2 = [];
+
+    b_crit = 0;
+    for i = 1:length(blst)
+        el = blst(i);
+        unstablelst11 = [unstablelst11; -A2(el) + sqrt(A1(el) * A1(el) - 4 * A2(el))];
+        unstablelst12 = [unstablelst12; -A2(el) - sqrt(A1(el) * A1(el) - 4 * A2(el))];
+        if (unstablelst11(end) > 0) && (b_crit == 0)
+            b_crit = el;
+        end
+        unstablelst2 = [unstablelst2; A1(el) * A1(el) - 4 * A2(el)];
+    end
+
+    b_crit;
+
     fhandle = figure;
-    subplot(3, 1, 1)
+    subplot(3, 2, 1)
         plot(ksilist, v1l, 'r', ksilist, p1l, 'b', 'LineWidth', 2.0)
         grid on;
         xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
         ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
-    subplot(3, 1, 2)
+    subplot(3, 2, 2)
         plot(ksilist, v2l, 'r', ksilist, p2l, 'b', 'LineWidth', 2.0)
         grid on;
         xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
         ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
-    subplot(3, 1, 3)
+    subplot(3, 2, 3)
         plot(ksilist, v3l, 'r', ksilist, p3l, 'b', 'LineWidth', 2.0)
+        grid on;
+        xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
+        ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
+    subplot(3, 2, 4)
+        plot(blst, unstablelst2, 'g', 'LineWidth', 2.0)
+        grid on;
+        xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
+        ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
+    subplot(3, 2, 5)
+        plot(blst, unstablelst11, 'g', 'LineWidth', 2.0)
+        grid on;
+        xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
+        ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
+    subplot(3, 2, 6)
+        plot(blst, unstablelst12, 'g', 'LineWidth', 2.0)
         grid on;
         xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
         ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
