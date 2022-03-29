@@ -30,6 +30,30 @@ function drs
     v2 = @(x)(C21 * sin(b2 * x) + C22 * sinh(b2 * x));
     v3 = @(x)(C31 * sin(b3 * x) + C32 * sinh(b3 * x));
 
+    f11 = @(x)(b1^2 * (-C11 * sin(b1 * x) + C12 * sinh(b1 * x)) * (C11 * sin(b1 * x) + C12 * sinh(b1 * x)));
+    f12 = @(x)(b2^2 * (-C21 * sin(b2 * x) + C22 * sinh(b2 * x)) * (C11 * sin(b1 * x) + C12 * sinh(b1 * x)));
+    f13 = @(x)(b3^2 * (-C31 * sin(b3 * x) + C32 * sinh(b3 * x)) * (C11 * sin(b1 * x) + C12 * sinh(b1 * x)));
+
+    f21 = @(x)(b1^2 * (-C11 * sin(b1 * x) + C12 * sinh(b1 * x)) * (C21 * sin(b2 * x) + C22 * sinh(b2 * x)));
+    f22 = @(x)(b2^2 * (-C21 * sin(b2 * x) + C22 * sinh(b2 * x)) * (C21 * sin(b2 * x) + C22 * sinh(b2 * x)));
+    f23 = @(x)(b3^2 * (-C31 * sin(b3 * x) + C32 * sinh(b3 * x)) * (C21 * sin(b2 * x) + C22 * sinh(b2 * x)));
+
+    f31 = @(x)(b1^2 * (-C11 * sin(b1 * x) + C12 * sinh(b1 * x)) * (C31 * sin(b3 * x) + C32 * sinh(b3 * x)));
+    f32 = @(x)(b2^2 * (C21 * sin(b2 * x) + C22 * sinh(b2 * x)) * (C31 * sin(b3 * x) + C32 * sinh(b3 * x)));
+    f33 = @(x)(b3^2 * (-C31 * sin(b3 * x) + C32 * sinh(b3 * x)) * (C31 * sin(b3 * x) + C32 * sinh(b3 * x)));
+
+    a11 = integral(f11, 0, 1, "ArrayValued", true);
+    a21 = integral(f12, 0, 1, "ArrayValued", true);
+    a31 = integral(f13, 0, 1, "ArrayValued", true);
+
+    a12 = integral(f21, 0, 1, "ArrayValued", true);
+    a22 = integral(f22, 0, 1, "ArrayValued", true);
+    a32 = integral(f23, 0, 1, "ArrayValued", true);
+
+    a13 = integral(f31, 0, 1, "ArrayValued", true);
+    a23 = integral(f32, 0, 1, "ArrayValued", true);
+    a33 = integral(f33, 0, 1, "ArrayValued", true);
+
     v12 = @(x)((C11 * sin(b1 * x) + C12 * sinh(b1 * x))^2);
     norm1 = sqrt(integral(v12, 0, 1, "ArrayValued", true));
     v22 = @(x)((C21 * sin(b2 * x) + C22 * sinh(b2 * x))^2);
@@ -62,6 +86,19 @@ function drs
         p2l = [p2l, x0(8) * ksi + x0(9) * ksi^3 + x0(10) * ksi^4 + x0(11) * ksi^5 + x0(12) * ksi^6];
         p3l = [p3l, D(1) * ksi + D(2) * ksi^3 + D(3) * ksi^4 + D(4) * ksi^5 + D(5) * ksi^6 + D(6) * ksi^7];
     end
+
+    disp1 = 0;
+    disp2 = 0;
+    disp3 = 0;
+    for i = 2:length(ksilist)
+        disp1 = disp1 + (p1l(i) - v1l(i))^2;
+        disp2 = disp2 + (p2l(i) - v2l(i))^2;
+        disp3 = disp3 + (p3l(i) - v3l(i))^2;
+    end
+
+    disp1 = disp1 * 0.001;
+    disp2 = disp2 * 0.001;
+    disp3 = disp3 * 0.001;
 
     fhandle = figure;
     subplot(3, 1, 1)
