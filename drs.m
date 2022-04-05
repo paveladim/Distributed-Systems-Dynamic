@@ -92,7 +92,7 @@ function drs
     A1 = @(b)(b * (a11 + a22) + b1^4 + b2^4);
     A2 = @(b)((b * a11 + b1^4) * (b * a22 + b2^4) - b^2 * a12 * a21);
     
-    blst = 20.15 : 0.000001 : 20.2;
+    blst = 20 : 0.001 : 21;
     unstablelst11 = [];
     unstablelst12 = [];
     unstablelst2 = [];
@@ -108,39 +108,46 @@ function drs
         unstablelst2 = [unstablelst2; A1(el) * A1(el) - 4 * A2(el)];
     end
 
-    b_crit;
+    b_crit
 
     fhandle = figure;
-    subplot(3, 2, 1)
-        plot(ksilist, v1l, 'r', ksilist, p1l, 'b', 'LineWidth', 2.0)
-        grid on;
-        xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
-        ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
-    subplot(3, 2, 2)
-        plot(ksilist, v2l, 'r', ksilist, p2l, 'b', 'LineWidth', 2.0)
-        grid on;
-        xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
-        ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
-    subplot(3, 2, 3)
-        plot(ksilist, v3l, 'r', ksilist, p3l, 'b', 'LineWidth', 2.0)
-        grid on;
-        xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
-        ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
-    subplot(3, 2, 4)
-        plot(blst, unstablelst2, 'g', 'LineWidth', 2.0)
-        grid on;
-        xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
-        ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
-    subplot(3, 2, 5)
-        plot(blst, unstablelst11, 'g', 'LineWidth', 2.0)
-        grid on;
-        xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
-        ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
-    subplot(3, 2, 6)
-        plot(blst, unstablelst12, 'g', 'LineWidth', 2.0)
-        grid on;
-        xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
-        ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
+     subplot(1, 1, 1)
+         plot(blst, unstablelst12, 'g', 'LineWidth', 2.0)
+         grid on;
+         xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
+         ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
+
+%     fhandle = figure;
+%     subplot(3, 2, 1)
+%         plot(ksilist, v1l, 'r', ksilist, p1l, 'b', 'LineWidth', 2.0)
+%         grid on;
+%         xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
+%         ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
+%     subplot(3, 2, 2)
+%         plot(ksilist, v2l, 'r', ksilist, p2l, 'b', 'LineWidth', 2.0)
+%         grid on;
+%         xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
+%         ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
+%     subplot(3, 2, 3)
+%         plot(ksilist, v3l, 'r', ksilist, p3l, 'b', 'LineWidth', 2.0)
+%         grid on;
+%         xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
+%         ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
+%     subplot(3, 2, 4)
+%         plot(blst, unstablelst2, 'g', 'LineWidth', 2.0)
+%         grid on;
+%         xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
+%         ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
+%     subplot(3, 2, 5)
+%         plot(blst, unstablelst11, 'g', 'LineWidth', 2.0)
+%         grid on;
+%         xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
+%         ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
+%     subplot(3, 2, 6)
+%         plot(blst, unstablelst12, 'g', 'LineWidth', 2.0)
+%         grid on;
+%         xlabel('x', 'FontSize', 12, 'FontWeight', 'bold');
+%         ylabel('f(x)', 'FontSize', 12, 'FontWeight', 'bold');
 
 end
 
